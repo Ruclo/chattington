@@ -1,0 +1,3 @@
+secrets/
+caddy-local-root.crt
+.env

@@ -1,0 +1,85 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-chatdb}
+      POSTGRES_USER: ${DB_NAME:-chatdb}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-chatpass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${BROKER_USER:-chatuser}
+      RABBITMQ_DEFAULT_PASS: ${BROKER_PASSWORD:-chatpass}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+
+  backend:
+    build:
+      context: ./chat-app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-chatdb}
+      DB_PASSWORD: ${DB_PASSWORD:-chatpass}
+      BROKER_HOST: rabbitmq
+      BROKER_PORT: 61613
+      BROKER_USER: ${BROKER_USER:-chatuser}
+      BROKER_PASSWORD: ${BROKER_PASSWORD:-chatpass}
+      FRONTEND_URL: https://chat.local
+      CLOUDINARY_URL: ${CLOUDINARY_URL}
+      RSA_PRIVATE_KEY: file:/run/secrets/rsa_private_key
+      RSA_PUBLIC_KEY: file:/run/secrets/rsa_public_key
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${BROKER_USER:-chatuser}
+      SPRING_RABBITMQ_PASSWORD: ${BROKER_PASSWORD:-chatpass}
+    depends_on:
+      - db
+      - rabbitmq
+    secrets:
+      - rsa_private_key
+      - rsa_public_key
+
+  frontend:
+    build:
+      context: ./chat-vue
+      args:
+        VITE_API_URL: ""
+        VITE_WEBSOCKET_URL: /api/ws
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2
+    environment:
+      CADDY_HOST: ${CADDY_HOST:-chat.local}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  db-data:
+  caddy_data:
+  caddy_config:
+
+secrets:
+  rsa_private_key:
+    file: ./secrets/private-key.pem
+  rsa_public_key:
+    file: ./secrets/public-key.pem
