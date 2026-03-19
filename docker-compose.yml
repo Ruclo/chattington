@@ -34,7 +34,7 @@ services:
       BROKER_PORT: 61613
       BROKER_USER: ${BROKER_USER:-chatuser}
       BROKER_PASSWORD: ${BROKER_PASSWORD:-chatpass}
-      FRONTEND_URL: https://chat.local
+      FRONTEND_URL: https://${DOMAIN_NAME:-chat.local}
       CLOUDINARY_URL: ${CLOUDINARY_URL}
       RSA_PRIVATE_KEY: file:/run/secrets/rsa_private_key
       RSA_PUBLIC_KEY: file:/run/secrets/rsa_public_key
@@ -61,7 +61,7 @@ services:
   caddy:
     image: caddy:2
     environment:
-      CADDY_HOST: ${CADDY_HOST:-chat.local}
+      CADDY_HOST: ${DOMAIN_NAME:-chat.local}
     ports:
       - "80:80"
       - "443:443"

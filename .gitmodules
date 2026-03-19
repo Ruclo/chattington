@@ -1,6 +1,6 @@
 [submodule "chat-app"]
 	path = chat-app
-	url = git@github.com:Ruclo/chat-app.git
+	url = https://github.com/Ruclo/chat-app.git
 [submodule "chat-vue"]
 	path = chat-vue
-	url = git@github.com:Ruclo/chat-vue.git
+	url = https://github.com/Ruclo/chat-vue.git

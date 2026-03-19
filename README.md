@@ -65,12 +65,12 @@ Key variables:
 - `DB_NAME`, `DB_PASSWORD`
 - `BROKER_USER`, `BROKER_PASSWORD`
 - `CLOUDINARY_URL`
-- `CADDY_HOST` (local hostname, default `chat.local`)
+- `DOMAIN_NAME` (hostname for both Caddy and backend allowed origin, default `chat.local`)
 
 ## Caddy Hostname
-The hostname is parameterized via `CADDY_HOST` (set in `docker-compose.yml`).
+The hostname is parameterized via `DOMAIN_NAME` (set in `docker-compose.yml`).
 If you want a different local URL, update:
-- `CADDY_HOST` in `docker-compose.yml`
+- `DOMAIN_NAME` in `.env`
 - the host entry in `C:\Windows\System32\drivers\etc\hosts`
 
 ## Environment
