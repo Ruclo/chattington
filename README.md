@@ -1,4 +1,5 @@
-# Chat App Monorepo
+# Chat App
+https://chattington.duckdns.org/
 
 This repo contains the full stack for a real-time chat app with:
 - a Spring Boot backend (REST + STOMP over RabbitMQ),
